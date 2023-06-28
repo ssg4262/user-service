@@ -29,14 +29,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserModel createUser(UserModel userModel) {
         userModel.setUserId(UUID.randomUUID().toString());// 복호화 후 SET
+
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT); // 필드가 맞아떨어질때 매핑
+
         UserEntity userEntity = mapper.map(userModel , UserEntity.class); // 매칭되는 필드만 변환 하는패턴
         
         userEntity.setEncryptedPwd(passwordEncoder.encode(userModel.getPwd())); // 암호 복호화
 
         userRepository.save(userEntity);// 테이블로 변환 후 save
-        UserModel returnUserModel = mapper.map(userModel, UserModel.class);
 
-        return returnUserModel;
+        return mapper.map(userModel, UserModel.class);
     }
 }
