@@ -9,11 +9,17 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class WebSecurity {
+    private static final String[] WHITE_LIST = {
+            "/users/**",
+            "/**"
+    };
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
+        return http.csrf().disable()
+                .headers(authorize -> authorize
+                        .frameOptions().disable())
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/users/**").permitAll())
+                        .requestMatchers(WHITE_LIST).permitAll())
                 .getOrBuild();
     }
 
