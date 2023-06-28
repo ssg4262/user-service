@@ -54,4 +54,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);
     }
 
+    @GetMapping("")
+    public ResponseEntity<ResponseUser> getUserByEmail(@PathVariable("email") String email){
+        return null;
+    }
+
 }
