@@ -2,14 +2,18 @@ package com.oxog.userservice.service.userSevice.userSeviceImpl;
 
 import com.oxog.userservice.Entity.UserEntity;
 import com.oxog.userservice.model.UserModel;
+import com.oxog.userservice.model.responseModel.order.ResponseOrder;
 import com.oxog.userservice.repository.UserRepository;
 import com.oxog.userservice.service.userSevice.UserService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -39,5 +43,23 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userEntity);// 테이블로 변환 후 save
 
         return mapper.map(userModel, UserModel.class);
+    }
+
+    @Override
+    public UserModel getUserByUserId(String userId) {
+        UserEntity userEntity = userRepository.findByUserId(userId);
+        if(userEntity == null) throw new UsernameNotFoundException("User Not Found");
+
+        UserModel userModel = mapper.map(userEntity, UserModel.class);
+
+        List<ResponseOrder> orders = new ArrayList<>();
+        userModel.setOrders(orders);
+
+        return userModel;
+    }
+
+    @Override
+    public Iterable<UserEntity> getUserByAll() {
+        return userRepository.findAll();
     }
 }

@@ -1,8 +1,10 @@
 package com.oxog.userservice.model;
 
+import com.oxog.userservice.model.responseModel.order.ResponseOrder;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class UserModel {
@@ -13,4 +15,6 @@ public class UserModel {
     private Date createdAt;
 
     private String encryptedPwd;//복호화된 비번
+
+    private List<ResponseOrder> orders;
 }
