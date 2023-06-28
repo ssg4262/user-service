@@ -2,7 +2,7 @@ package com.oxog.userservice.controller;
 
 import com.oxog.userservice.model.UserModel;
 import com.oxog.userservice.model.requestModel.RequestUser;
-import com.oxog.userservice.model.responseModel.ResponseUser;
+import com.oxog.userservice.model.responseModel.user.ResponseUser;
 import com.oxog.userservice.service.userSevice.UserService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
