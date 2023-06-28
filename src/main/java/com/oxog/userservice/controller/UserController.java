@@ -18,7 +18,7 @@ public class UserController {
 
     ModelMapper mapper = new ModelMapper();
 
-    @PostMapping("")
+    @PostMapping("/users")
     public String createUser(@RequestBody RequestUser user){
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         UserModel userModel = mapper.map(user , UserModel.class);
