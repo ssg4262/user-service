@@ -11,6 +11,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserModel createUser(UserModel userModel) {
         userModel.setUserId(UUID.randomUUID().toString());// 복호화 후 SET
+        
         return null;
     }
 }
