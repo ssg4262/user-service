@@ -24,7 +24,7 @@ public class UserController {
 
     ModelMapper mapper = new ModelMapper();
 
-    @PostMapping("/users")
+    @PostMapping("/users") // 회원가입
     public ResponseEntity createUser(@RequestBody RequestUser user){
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         UserModel userModel = mapper.map(user , UserModel.class);
@@ -34,7 +34,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
 
-    @GetMapping("/users")
+    @GetMapping("/users") // 전체 유저 조회
     public ResponseEntity<List<ResponseUser>> getUsers(){
         List<ResponseUser> result = new ArrayList<>();
         Iterable<UserEntity> userList = userService.getUserByAll();
@@ -45,4 +45,13 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
+
+    @GetMapping("/users/{userId}") // 아이디 조회
+    public ResponseEntity<ResponseUser> getUser(@PathVariable("userId") String userId){
+        UserModel userModel = userService.getUserByUserId(userId);
+        ResponseUser responseUser = mapper.map(userModel,ResponseUser.class);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseUser);
+    }
+
 }
