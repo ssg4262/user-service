@@ -6,7 +6,8 @@ import com.oxog.userservice.service.userSevice.UserService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,10 +20,10 @@ public class UserController {
     ModelMapper mapper = new ModelMapper();
 
     @PostMapping("/users")
-    public String createUser(@RequestBody RequestUser user){
+    public ResponseEntity createUser(@RequestBody RequestUser user){
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         UserModel userModel = mapper.map(user , UserModel.class);
         userService.createUser(userModel);
-        return "success";
+        return new ResponseEntity(HttpStatus.CREATED);
     }
 }
