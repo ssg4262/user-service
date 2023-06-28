@@ -7,6 +7,7 @@ import com.oxog.userservice.service.userSevice.UserService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -16,6 +17,11 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;
+
+
     //MatchingStrategies.STANDARD : 지능적 매핑
     //MatchingStrategies.STRICT : 필드가 맞아떨어질때 매핑
     //MatchingStrategies.LOOSE : 느슨한 매핑
@@ -25,10 +31,12 @@ public class UserServiceImpl implements UserService {
         userModel.setUserId(UUID.randomUUID().toString());// 복호화 후 SET
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT); // 필드가 맞아떨어질때 매핑
         UserEntity userEntity = mapper.map(userModel , UserEntity.class); // 매칭되는 필드만 변환 하는패턴
-        userEntity.setEncryptedPwd("encrypted_password");
+        
+        userEntity.setEncryptedPwd("encrypted_password"); // 암호 복호화
 
         userRepository.save(userEntity);// 테이블로 변환 후 save
+        UserModel returnUserModel = mapper.map(userModel, UserModel.class);
 
-        return null;
+        return returnUserModel;
     }
 }

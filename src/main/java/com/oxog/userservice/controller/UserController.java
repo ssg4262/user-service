@@ -2,6 +2,7 @@ package com.oxog.userservice.controller;
 
 import com.oxog.userservice.model.UserModel;
 import com.oxog.userservice.model.requestModel.RequestUser;
+import com.oxog.userservice.model.responseModel.ResponseUser;
 import com.oxog.userservice.service.userSevice.UserService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -24,6 +25,8 @@ public class UserController {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         UserModel userModel = mapper.map(user , UserModel.class);
         userService.createUser(userModel);
-        return new ResponseEntity(HttpStatus.CREATED);
+        ResponseUser responseUser = mapper.map(userModel, ResponseUser.class); // userModel을 ResponseUser.class 로 받기
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
 }
