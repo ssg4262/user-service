@@ -5,6 +5,7 @@ import com.oxog.userservice.model.UserModel;
 import com.oxog.userservice.model.responseModel.order.ResponseOrder;
 import com.oxog.userservice.repository.UserRepository;
 import com.oxog.userservice.service.userSevice.UserService;
+import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Log4j2
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -33,13 +35,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserModel createUser(UserModel userModel) {
         userModel.setUserId(UUID.randomUUID().toString());// 복호화 후 SET
-
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT); // 필드가 맞아떨어질때 매핑
-
         UserEntity userEntity = mapper.map(userModel , UserEntity.class); // 매칭되는 필드만 변환 하는패턴
-        
+        // 이메일 중복 체크
+        UserEntity chkDup = userRepository.getUserByEmail(userEntity.getEmail());
+        if (chkDup != null) throw new UsernameNotFoundException("Email Duplicate");
+        //
         userEntity.setEncryptedPwd(passwordEncoder.encode(userModel.getPwd())); // 암호 복호화
-
         userRepository.save(userEntity);// 테이블로 변환 후 save
 
         return mapper.map(userModel, UserModel.class);
