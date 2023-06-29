@@ -25,7 +25,7 @@ public class UserController {
     ModelMapper mapper = new ModelMapper();
 
     @PostMapping("/users") // 회원가입
-    public ResponseEntity createUser(@RequestBody RequestUser user){
+    public ResponseEntity<ResponseUser> createUser(@RequestBody RequestUser user){
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         UserModel userModel = mapper.map(user , UserModel.class);
         userService.createUser(userModel);
