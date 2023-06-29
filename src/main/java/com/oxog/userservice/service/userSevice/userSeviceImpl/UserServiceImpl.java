@@ -63,4 +63,13 @@ public class UserServiceImpl implements UserService {
     public Iterable<UserEntity> getUserByAll() {
         return userRepository.findAll();
     }
+
+    @Override
+    public UserModel getUserByEmail(String email) {
+        UserEntity userEntity = userRepository.getUserByEmail(email);
+        UserModel userModel = mapper.map(userEntity,UserModel.class);
+        List<ResponseOrder> orders = new ArrayList<>();
+        userModel.setOrders(orders);
+        return userModel;
+    }
 }

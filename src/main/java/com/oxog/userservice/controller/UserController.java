@@ -46,7 +46,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @GetMapping("/users/{userId}") // 아이디 조회
+    @GetMapping("/users/id/{userId}") // 아이디 조회
     public ResponseEntity<ResponseUser> getUser(@PathVariable("userId") String userId){
         UserModel userModel = userService.getUserByUserId(userId);
         ResponseUser responseUser = mapper.map(userModel,ResponseUser.class);
@@ -54,9 +54,10 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);
     }
 
-    @GetMapping("")
+    @GetMapping("/users/email/{email}")
     public ResponseEntity<ResponseUser> getUserByEmail(@PathVariable("email") String email){
-        return null;
+        UserModel userModel = userService.getUserByEmail(email);
+        ResponseUser responseUser = mapper.map(userModel,ResponseUser.class);
+        return ResponseEntity.status(HttpStatus.OK).body(responseUser);
     }
-
 }
