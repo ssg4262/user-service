@@ -5,6 +5,7 @@ import com.oxog.userservice.model.UserModel;
 import com.oxog.userservice.model.requestModel.RequestUser;
 import com.oxog.userservice.model.responseModel.user.ResponseUser;
 import com.oxog.userservice.service.userSevice.UserService;
+import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@Log4j2
 @RequestMapping("/user-service")
 public class UserController {
 
