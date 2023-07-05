@@ -42,7 +42,7 @@ public class WebSecurity {
                                 .requestMatchers(WHITE_LIST).permitAll()
                                 .requestMatchers(new IpAddressMatcher("50.10.10.164")).permitAll()
                                 .and()
-                                .addFilter(getAuthenticationFilter());
+                                .addFilter(getAuthenticationFilter()); // AuthenticationFilter 실행
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

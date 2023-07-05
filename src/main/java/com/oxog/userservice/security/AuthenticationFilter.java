@@ -37,6 +37,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException { // 인증 성공시
-        super.successfulAuthentication(request, response, chain, authResult);
+//        super.successfulAuthentication(request, response, chain, authResult);
     }
 }
