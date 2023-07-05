@@ -2,8 +2,9 @@ package com.oxog.userservice.service.userSevice;
 
 import com.oxog.userservice.Entity.UserEntity;
 import com.oxog.userservice.model.UserModel;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
     UserModel createUser(UserModel userModel);
 
     UserModel getUserByUserId(String userId);// 아이디로 유저검색

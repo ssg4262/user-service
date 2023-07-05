@@ -9,6 +9,8 @@ import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,13 +34,25 @@ public class UserServiceImpl implements UserService {
     //MatchingStrategies.STRICT : 필드가 맞아떨어질때 매핑
     //MatchingStrategies.LOOSE : 느슨한 매핑
     ModelMapper mapper = new ModelMapper();
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        UserEntity userEntity = userRepository.fundByEmail(email); //이메일로 조회
+
+        if(userEntity == null) throw new UsernameNotFoundException(email);
+
+        return new User(userEntity.getEmail(),userEntity.getEncryptedPwd(),
+                true, true , true , true ,
+                new ArrayList<>());
+    }
+
     @Override
     public UserModel createUser(UserModel userModel) {
         userModel.setUserId(UUID.randomUUID().toString());// 복호화 후 SET
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT); // 필드가 맞아떨어질때 매핑
         UserEntity userEntity = mapper.map(userModel , UserEntity.class); // 매칭되는 필드만 변환 하는패턴
         // 이메일 중복 체크
-        UserEntity chkDup = userRepository.getUserByEmail(userEntity.getEmail());
+        UserEntity chkDup = userRepository.fundByEmail(userEntity.getEmail());
         if (chkDup != null) throw new UsernameNotFoundException("Email Duplicate");
         //
         userEntity.setEncryptedPwd(passwordEncoder.encode(userModel.getPwd())); // 암호 복호화
@@ -68,10 +82,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserModel getUserByEmail(String email) {
-        UserEntity userEntity = userRepository.getUserByEmail(email);
+        UserEntity userEntity = userRepository.fundByEmail(email);
         UserModel userModel = mapper.map(userEntity,UserModel.class);
         List<ResponseOrder> orders = new ArrayList<>();
         userModel.setOrders(orders);
         return userModel;
     }
+
 }
