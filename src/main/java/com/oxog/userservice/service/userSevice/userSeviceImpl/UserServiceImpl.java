@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        UserEntity userEntity = userRepository.fundByEmail(email); //이메일로 조회
+        UserEntity userEntity = userRepository.findByEmail(email); //이메일로 조회
 
         if(userEntity == null) throw new UsernameNotFoundException(email);
 
@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT); // 필드가 맞아떨어질때 매핑
         UserEntity userEntity = mapper.map(userModel , UserEntity.class); // 매칭되는 필드만 변환 하는패턴
         // 이메일 중복 체크
-        UserEntity chkDup = userRepository.fundByEmail(userEntity.getEmail());
+        UserEntity chkDup = userRepository.findByEmail(userEntity.getEmail());
         if (chkDup != null) throw new UsernameNotFoundException("Email Duplicate");
         //
         userEntity.setEncryptedPwd(passwordEncoder.encode(userModel.getPwd())); // 암호 복호화
@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserModel getUserByEmail(String email) {
-        UserEntity userEntity = userRepository.fundByEmail(email);
+        UserEntity userEntity = userRepository.findByEmail(email);
         UserModel userModel = mapper.map(userEntity,UserModel.class);
         List<ResponseOrder> orders = new ArrayList<>();
         userModel.setOrders(orders);
