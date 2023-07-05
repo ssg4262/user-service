@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oxog.userservice.model.UserModel;
 import com.oxog.userservice.model.requestModel.RequestLogin;
 import com.oxog.userservice.service.userSevice.UserService;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -56,5 +59,15 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                             Authentication authResult) throws IOException, ServletException { // 인증 성공시
             String userEmail = ((User)authResult.getPrincipal()).getUsername();
             UserModel userModel = userService.getUserByEmail(userEmail);
+
+        String token = Jwts.builder()
+                .setSubject(userModel.getUserId())
+                .setExpiration(new Date(System.currentTimeMillis() +
+                        Long.parseLong(env.getProperty("token.expiration_time")))) // yaml에 정의한 속성
+                .signWith(SignatureAlgorithm.HS512,env.getProperty("token.secret"))
+                .compact();
+
+        response.addHeader("token" , token);
+        response.addHeader("userId" , userModel.getUserId());
     }
 }
