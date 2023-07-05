@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @Log4j2
-@RequestMapping("/user-service")
+@RequestMapping("/")
 public class UserController {
 
     @Autowired
