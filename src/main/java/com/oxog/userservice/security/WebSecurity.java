@@ -4,6 +4,7 @@ import com.oxog.userservice.service.userSevice.UserService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -18,6 +19,7 @@ import org.springframework.security.web.util.matcher.IpAddressMatcher;
 public class WebSecurity {
     private  UserService userService;
     private  BCryptPasswordEncoder bCryptPasswordEncoder;
+    private Environment env;
     private  ObjectPostProcessor<Object> objectPostProcessor;
 
     private static final String[] WHITE_LIST = {
@@ -26,8 +28,9 @@ public class WebSecurity {
             "/**"
     };
 
-    public WebSecurity(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder, ObjectPostProcessor<Object> objectPostProcessor) {
+    public WebSecurity(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder, Environment env, ObjectPostProcessor<Object> objectPostProcessor) {
         this.userService = userService;
+        this.env = env;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.objectPostProcessor = objectPostProcessor;
     }
@@ -58,9 +61,8 @@ public class WebSecurity {
     }
 
     private AuthenticationFilter getAuthenticationFilter() throws Exception {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter();
         AuthenticationManagerBuilder builder = new AuthenticationManagerBuilder(objectPostProcessor);
-        authenticationFilter.setAuthenticationManager(authenticationManager(builder));
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager(builder),userService,env);
         return authenticationFilter;
     }
 
