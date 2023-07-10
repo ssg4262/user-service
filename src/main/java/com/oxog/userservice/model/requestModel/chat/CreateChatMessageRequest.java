@@ -1,4 +1,4 @@
-package com.oxog.userservice.model.requestModel;
+package com.oxog.userservice.model.requestModel.chat;
 
 import lombok.Data;
 

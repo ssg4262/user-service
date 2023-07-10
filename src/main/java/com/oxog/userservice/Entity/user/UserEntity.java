@@ -1,4 +1,4 @@
-package com.oxog.userservice.Entity;
+package com.oxog.userservice.Entity.user;
 
 import jakarta.persistence.*;
 import lombok.Data;

@@ -1,8 +1,8 @@
 package com.oxog.userservice.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oxog.userservice.model.UserModel;
-import com.oxog.userservice.model.requestModel.RequestLogin;
+import com.oxog.userservice.model.responseModel.userDto.UserModel;
+import com.oxog.userservice.model.requestModel.user.RequestLogin;
 import com.oxog.userservice.service.userSevice.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

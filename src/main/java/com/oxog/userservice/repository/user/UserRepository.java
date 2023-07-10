@@ -1,6 +1,6 @@
-package com.oxog.userservice.repository;
+package com.oxog.userservice.repository.user;
 
-import com.oxog.userservice.Entity.UserEntity;
+import com.oxog.userservice.Entity.user.UserEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 

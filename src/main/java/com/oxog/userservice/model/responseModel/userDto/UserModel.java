@@ -1,4 +1,4 @@
-package com.oxog.userservice.model;
+package com.oxog.userservice.model.responseModel.userDto;
 
 import com.oxog.userservice.model.responseModel.order.ResponseOrder;
 import lombok.Data;

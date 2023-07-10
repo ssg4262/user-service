@@ -1,13 +1,13 @@
 package com.oxog.userservice.service.userSevice.userSeviceImpl;
 
-import com.oxog.userservice.Entity.UserEntity;
+import com.oxog.userservice.Entity.user.UserEntity;
 import com.oxog.userservice.messageEnum.ResponseMessage;
-import com.oxog.userservice.model.UserModel;
-import com.oxog.userservice.model.requestModel.RequestPatchUser;
-import com.oxog.userservice.model.requestModel.RequestUser;
+import com.oxog.userservice.model.responseModel.userDto.UserModel;
+import com.oxog.userservice.model.requestModel.user.RequestPatchUser;
+import com.oxog.userservice.model.requestModel.user.RequestUser;
 import com.oxog.userservice.model.responseModel.order.ResponseOrder;
 import com.oxog.userservice.model.responseModel.user.ResponseUser;
-import com.oxog.userservice.repository.UserRepository;
+import com.oxog.userservice.repository.user.UserRepository;
 import com.oxog.userservice.service.userSevice.UserService;
 import jakarta.ws.rs.NotFoundException;
 import lombok.extern.log4j.Log4j2;

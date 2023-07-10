@@ -1,4 +1,4 @@
-package com.oxog.userservice.model;
+package com.oxog.userservice.model.responseModel.chatDto;
 
 import java.util.Date;
 

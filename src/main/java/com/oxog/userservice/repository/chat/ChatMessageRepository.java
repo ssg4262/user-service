@@ -1,4 +1,4 @@
-package com.oxog.userservice.repository;
+package com.oxog.userservice.repository.chat;
 
 import com.oxog.userservice.Entity.chat.ChatMessageEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

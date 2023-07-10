@@ -1,11 +1,11 @@
 package com.oxog.userservice.service.chatService.chatServiceImpl;
 
-import com.oxog.userservice.Entity.UserEntity;
+import com.oxog.userservice.Entity.user.UserEntity;
 import com.oxog.userservice.Entity.chat.ChatMessageEntity;
-import com.oxog.userservice.model.ChatMessageDto;
-import com.oxog.userservice.model.requestModel.CreateChatMessageRequest;
-import com.oxog.userservice.repository.ChatMessageRepository;
-import com.oxog.userservice.repository.UserRepository;
+import com.oxog.userservice.model.responseModel.chatDto.ChatMessageDto;
+import com.oxog.userservice.model.requestModel.chat.CreateChatMessageRequest;
+import com.oxog.userservice.repository.chat.ChatMessageRepository;
+import com.oxog.userservice.repository.user.UserRepository;
 import com.oxog.userservice.service.chatService.ChatService;
 import jakarta.ws.rs.NotFoundException;
 import org.modelmapper.ModelMapper;

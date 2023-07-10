@@ -1,4 +1,4 @@
-package com.oxog.userservice.model.requestModel;
+package com.oxog.userservice.model.requestModel.user;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
