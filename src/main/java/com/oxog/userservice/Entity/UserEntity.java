@@ -22,6 +22,6 @@ public class UserEntity {
     private String userId;
     @Column(nullable = false, unique = true)
     private String encryptedPwd;
-    @Column(nullable = false)
-    private String deleteYn = "N";
+    @Column(nullable = false, columnDefinition = "VARCHAR(1) DEFAULT 'N'")
+    private String deleteYn;
 }

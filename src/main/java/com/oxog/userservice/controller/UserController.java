@@ -30,18 +30,16 @@ public class UserController {
 
     @PostMapping("/users") // 회원가입
     public ResponseEntity<ResponseUser> createUser(@RequestBody RequestUser user){
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        UserModel userModel = mapper.map(user , UserModel.class);
-        userService.createUser(userModel);
-        ResponseUser responseUser = mapper.map(userModel, ResponseUser.class); // userModel을 ResponseUser.class 로 받기
-        
+
+        ResponseUser responseUser = userService.createUser(user);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
 
     @GetMapping("/users") // 전체 유저 조회
     public ResponseEntity<List<ResponseUser>> getUsers(){
         List<ResponseUser> result = new ArrayList<>();
-        Iterable<UserEntity> userList = userService.getUserByAll();
+        List<UserEntity> userList = userService.getUserByAll();
 
         userList.forEach( resultList -> {
             result.add(mapper.map(resultList,ResponseUser.class));

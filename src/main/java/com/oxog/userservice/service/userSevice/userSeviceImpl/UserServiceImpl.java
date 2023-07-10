@@ -4,7 +4,9 @@ import com.oxog.userservice.Entity.UserEntity;
 import com.oxog.userservice.messageEnum.ResponseMessage;
 import com.oxog.userservice.model.UserModel;
 import com.oxog.userservice.model.requestModel.RequestPatchUser;
+import com.oxog.userservice.model.requestModel.RequestUser;
 import com.oxog.userservice.model.responseModel.order.ResponseOrder;
+import com.oxog.userservice.model.responseModel.user.ResponseUser;
 import com.oxog.userservice.repository.UserRepository;
 import com.oxog.userservice.service.userSevice.UserService;
 import jakarta.ws.rs.NotFoundException;
@@ -18,10 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Log4j2
@@ -51,18 +50,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserModel createUser(UserModel userModel) {
-        userModel.setUserId(UUID.randomUUID().toString());// 복호화 후 SET
+    public ResponseUser createUser(RequestUser user) {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT); // 필드가 맞아떨어질때 매핑
+        UserModel userModel = mapper.map(user , UserModel.class);
+        userModel.setUserId(UUID.randomUUID().toString());// 복호화 후 SET
+
         UserEntity userEntity = mapper.map(userModel , UserEntity.class); // 매칭되는 필드만 변환 하는패턴
         // 이메일 중복 체크
         UserEntity chkDup = userRepository.findByEmail(userEntity.getEmail());
         if (chkDup != null) throw new UsernameNotFoundException("Email Duplicate");
         //
+        userEntity.setDeleteYn("N");
         userEntity.setEncryptedPwd(passwordEncoder.encode(userModel.getPwd())); // 암호 복호화
         userRepository.save(userEntity);// 테이블로 변환 후 save
 
-        return mapper.map(userModel, UserModel.class);
+        UserModel responseUserModel = mapper.map(userModel, UserModel.class);
+
+        return mapper.map(responseUserModel, ResponseUser.class);
     }
 
     @Override
@@ -80,8 +84,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Iterable<UserEntity> getUserByAll() {
-        return userRepository.findAll();
+    public List<UserEntity> getUserByAll() {
+        Optional<List<UserEntity>> usersOptional = userRepository.findAllByDeleteYn();
+        return usersOptional.orElse(Collections.emptyList());
     }
 
     @Override
