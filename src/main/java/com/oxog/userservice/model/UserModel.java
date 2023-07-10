@@ -16,7 +16,7 @@ public class UserModel {
     private String pwd;
     private String userId;
     private Date createdAt;
-
+    private String deleteYn;
     private String encryptedPwd;//복호화된 비번
 
     private List<ResponseOrder> orders;

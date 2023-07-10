@@ -67,9 +67,13 @@ public class UserController {
 
     @PatchMapping("/users/{userId}") // 회원정보 수정
     public ResponseEntity<ResponseMessage> patchUser(@PathVariable("userId") String userId , @RequestBody RequestPatchUser requestPatchUser){
-        ResponseMessage message =userService.patchUser(userId,requestPatchUser);
+        ResponseMessage message = userService.patchUser(userId,requestPatchUser);
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
-
+    @GetMapping("/users/delete/{userId}") // 회원정보 삭제
+    public ResponseEntity<ResponseMessage> deletedUser(@PathVariable("userId") String userId){
+        ResponseMessage message = userService.deleteUser(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(message);
+    }
 }

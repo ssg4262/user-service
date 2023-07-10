@@ -4,7 +4,6 @@ import com.oxog.userservice.Entity.UserEntity;
 import com.oxog.userservice.messageEnum.ResponseMessage;
 import com.oxog.userservice.model.UserModel;
 import com.oxog.userservice.model.requestModel.RequestPatchUser;
-import com.oxog.userservice.model.requestModel.RequestUser;
 import com.oxog.userservice.model.responseModel.order.ResponseOrder;
 import com.oxog.userservice.repository.UserRepository;
 import com.oxog.userservice.service.userSevice.UserService;
@@ -106,6 +105,15 @@ public class UserServiceImpl implements UserService {
 
         UserEntity reqPatchEntity = mapper.map(userModel, UserEntity.class);
         userRepository.save(reqPatchEntity);
+        return ResponseMessage.SUCCESS;
+    }
+
+    @Override
+    public ResponseMessage deleteUser(String userId) { // 회원정보 삭제
+        UserEntity userEntity = userRepository.findByUserId(userId);
+        if(userEntity == null) throw new NotFoundException("No search User");
+        userEntity.setDeleteYn("Y");
+        userRepository.save(userEntity);
         return ResponseMessage.SUCCESS;
     }
 
