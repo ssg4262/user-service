@@ -8,6 +8,7 @@ import java.util.List;
 
 @Data
 public class UserModel {
+    private long id;
     private String email;
     private String name;
     private String nickName;

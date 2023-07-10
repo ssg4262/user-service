@@ -1,10 +1,14 @@
 package com.oxog.userservice.service.userSevice.userSeviceImpl;
 
 import com.oxog.userservice.Entity.UserEntity;
+import com.oxog.userservice.messageEnum.ResponseMessage;
 import com.oxog.userservice.model.UserModel;
+import com.oxog.userservice.model.requestModel.RequestPatchUser;
+import com.oxog.userservice.model.requestModel.RequestUser;
 import com.oxog.userservice.model.responseModel.order.ResponseOrder;
 import com.oxog.userservice.repository.UserRepository;
 import com.oxog.userservice.service.userSevice.UserService;
+import jakarta.ws.rs.NotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -17,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -86,6 +91,22 @@ public class UserServiceImpl implements UserService {
         if (userEntity == null) throw new UsernameNotFoundException(email);
         UserModel userModel = mapper.map(userEntity,UserModel.class);
         return userModel;
+    }
+
+    @Override
+    public ResponseMessage patchUser(String userId, RequestPatchUser requestPatchUser) {
+        UserEntity userEntity = userRepository.findByUserId(userId);
+        if(userEntity == null)throw new NotFoundException("No search User");
+
+        UserModel userModel = mapper.map(userEntity, UserModel.class);
+
+        // 업데이트할 필드를 람다식을 사용하여 설정 ifPresent = 값이 있을경우만 업데이트
+        Optional.ofNullable(requestPatchUser.getNickName()).ifPresent(userModel::setNickName);
+        Optional.ofNullable(requestPatchUser.getAddress()).ifPresent(userModel::setAddress);
+
+        UserEntity reqPatchEntity = mapper.map(userModel, UserEntity.class);
+        userRepository.save(reqPatchEntity);
+        return ResponseMessage.SUCCESS;
     }
 
 }

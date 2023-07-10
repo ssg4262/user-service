@@ -3,6 +3,7 @@ package com.oxog.userservice.controller;
 import com.oxog.userservice.Entity.UserEntity;
 import com.oxog.userservice.messageEnum.ResponseMessage;
 import com.oxog.userservice.model.UserModel;
+import com.oxog.userservice.model.requestModel.RequestPatchUser;
 import com.oxog.userservice.model.requestModel.RequestUser;
 import com.oxog.userservice.model.responseModel.user.ResponseUser;
 import com.oxog.userservice.service.userSevice.UserService;
@@ -65,10 +66,9 @@ public class UserController {
     }
 
     @PatchMapping("/users/{userId}") // 회원정보 수정
-    public ResponseEntity<ResponseMessage> patchUser(@PathVariable("userId") String userId , @RequestBody RequestUser requestUser){
-        log.info(userId);
-        log.info(requestUser);
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseMessage.SUCCESS);
+    public ResponseEntity<ResponseMessage> patchUser(@PathVariable("userId") String userId , @RequestBody RequestPatchUser requestPatchUser){
+        ResponseMessage message =userService.patchUser(userId,requestPatchUser);
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
 
