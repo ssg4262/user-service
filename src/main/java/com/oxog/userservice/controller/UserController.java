@@ -1,6 +1,7 @@
 package com.oxog.userservice.controller;
 
 import com.oxog.userservice.Entity.UserEntity;
+import com.oxog.userservice.messageEnum.ResponseMessage;
 import com.oxog.userservice.model.UserModel;
 import com.oxog.userservice.model.requestModel.RequestUser;
 import com.oxog.userservice.model.responseModel.user.ResponseUser;
@@ -56,10 +57,19 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);
     }
 
-    @GetMapping("/users/email/{email}")
+    @GetMapping("/users/email/{email}") // 이메일 조회
     public ResponseEntity<ResponseUser> getUserByEmail(@PathVariable("email") String email){
         UserModel userModel = userService.getUserByEmail(email);
         ResponseUser responseUser = mapper.map(userModel,ResponseUser.class);
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);
     }
+
+    @PatchMapping("/users/{userId}") // 회원정보 수정
+    public ResponseEntity<ResponseMessage> patchUser(@PathVariable("userId") String userId , @RequestBody RequestUser requestUser){
+        log.info(userId);
+        log.info(requestUser);
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseMessage.SUCCESS);
+    }
+
+
 }

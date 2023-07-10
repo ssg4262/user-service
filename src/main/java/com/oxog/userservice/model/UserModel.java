@@ -10,6 +10,7 @@ import java.util.List;
 public class UserModel {
     private String email;
     private String name;
+    private String nickName;
     private String address;
     private String pwd;
     private String userId;

@@ -11,6 +11,7 @@ import java.util.List;
 public class ResponseUser {
     private String email;
     private String name;
+    private String nickName;
     private String address;
     private String userId;
 

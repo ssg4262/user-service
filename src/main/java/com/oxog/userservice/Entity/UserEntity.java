@@ -15,6 +15,8 @@ public class UserEntity {
     @Column(nullable = false, length = 50)
     private String name;
     @Column(nullable = false, length = 50)
+    private String nickName;
+    @Column(nullable = false, length = 50)
     private String address;
     @Column(nullable = false, unique = true)
     private String userId;
