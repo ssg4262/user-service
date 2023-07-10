@@ -60,7 +60,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                             Authentication authResult) throws IOException, ServletException { // 인증 성공시
             String userEmail = ((User)authResult.getPrincipal()).getUsername();
             UserModel userModel = userService.getUserByEmail(userEmail);
-            if(!userModel.getDeleteYn().equals("Y")){
+            if(userModel.getDeleteYn().equals("N")){
                 String token = Jwts.builder()
                         .setSubject(userModel.getUserId())
                         .setExpiration(new Date(System.currentTimeMillis() +
