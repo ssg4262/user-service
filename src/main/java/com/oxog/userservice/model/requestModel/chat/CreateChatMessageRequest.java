@@ -6,5 +6,5 @@ import lombok.Data;
 public class CreateChatMessageRequest {
     private String message;
     private String userId;
-    private String sender;
+    private String nickName;
 }

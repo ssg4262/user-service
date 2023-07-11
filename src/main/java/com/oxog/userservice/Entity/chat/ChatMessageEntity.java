@@ -17,7 +17,7 @@ public class ChatMessageEntity {
     private String content;
 
     @Column(nullable = false)
-    private String sender;
+    private String nickName;
 
     @Column(nullable = false)
     private String userId;

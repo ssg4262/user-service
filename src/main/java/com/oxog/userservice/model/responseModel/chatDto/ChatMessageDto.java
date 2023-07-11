@@ -5,6 +5,6 @@ import java.util.Date;
 public class ChatMessageDto {
     private Long id;
     private String message;
-    private String sender;
+    private String nickName;
     private Date createdAt;
 }
