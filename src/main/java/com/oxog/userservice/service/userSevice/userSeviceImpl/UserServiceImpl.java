@@ -19,7 +19,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -51,11 +53,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseUser createUser(RequestUser user) {
+        byte[] userIconBytes;
+
+        MultipartFile userIcon = user.getReqUserIcon();
+
+        try {
+            userIconBytes = userIcon.getBytes();
+        } catch (IOException e) {
+            throw new RuntimeException("err userIconBytes trans fail");
+        }
+
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT); // 필드가 맞아떨어질때 매핑
-        UserModel userModel = mapper.map(user , UserModel.class);
+
+        UserModel userModel = mapper.map(user, UserModel.class);
+        userModel.setUserIcon(userIconBytes);
+
         userModel.setUserId(UUID.randomUUID().toString());// 복호화 후 SET
 
-        UserEntity userEntity = mapper.map(userModel , UserEntity.class); // 매칭되는 필드만 변환 하는패턴
+        UserEntity userEntity = mapper.map(userModel, UserEntity.class); // 매칭되는 필드만 변환 하는패턴
         // 이메일 중복 체크
         UserEntity chkDup = userRepository.findByEmail(userEntity.getEmail());
         if (chkDup != null) throw new UsernameNotFoundException("Email Duplicate");
