@@ -18,6 +18,6 @@ public class UserModel {
     private Date createdAt;
     private String deleteYn;
     private String encryptedPwd;//복호화된 비번
-
+    private byte[] userIcon; // 유저 아이콘 (이미지 데이터)
     private List<ResponseOrder> orders;
 }

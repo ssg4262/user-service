@@ -24,4 +24,6 @@ public class UserEntity {
     private String encryptedPwd;
     @Column(nullable = false, columnDefinition = "VARCHAR(1) DEFAULT 'N'")
     private String deleteYn;
+    @Lob // 큰 데이터를 저장하기 위한 애너테이션
+    private byte[] userIcon; // 유저 아이콘 (이미지 데이터)
 }
