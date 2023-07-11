@@ -31,7 +31,7 @@ public class ChatServiceImpl implements ChatService {
         if(userEntity == null) throw new NotFoundException("Not Found User");
 
         ChatMessageEntity newMessageEntity = modelMapper.map(createChatMessageRequest, ChatMessageEntity.class);
-        newMessageEntity.setSender(userEntity.getName());
+        newMessageEntity.setNickName(userEntity.getName());
 
         ChatMessageEntity savedMessageEntity = chatMessageRepository.save(newMessageEntity);
         return modelMapper.map(savedMessageEntity, ChatMessageDto.class);
