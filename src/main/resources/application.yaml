@@ -25,6 +25,14 @@ eureka:
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka
 
+
+management:
+  endpoint:
+    web:
+      exposure:
+        include: refresh, health, beans
+
+
 #token:
 #  expiration_time: 8640000
 #  secret: user_token
