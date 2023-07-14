@@ -1,0 +1,5 @@
+spring:
+  cloud:
+    config:
+      uri: http://50.10.10.164:8888
+      name : ecommerce

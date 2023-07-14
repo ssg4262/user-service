@@ -10,6 +10,7 @@ import com.oxog.userservice.service.userSevice.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,16 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private Environment env;
     ModelMapper mapper = new ModelMapper();
+
+    @GetMapping("/status")
+    public String status(){
+        return String.format("local server.port="+env.getProperty("local.server.port")
+                + "token secret ="+env.getProperty("token.secret")
+        );
+    }
 
     @PostMapping("/users") // 회원가입
     public ResponseEntity<ResponseUser> createUser(@RequestBody RequestUser user){
