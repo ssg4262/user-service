@@ -54,19 +54,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseUser createUser(RequestUser user) {
         byte[] userIconBytes;
-
-        MultipartFile userIcon = user.getReqUserIcon();
-
-        try {
-            userIconBytes = userIcon.getBytes();
-        } catch (IOException e) {
-            throw new RuntimeException("err userIconBytes trans fail");
-        }
-
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT); // 필드가 맞아떨어질때 매핑
 
         UserModel userModel = mapper.map(user, UserModel.class);
-        userModel.setUserIcon(userIconBytes);
+
+        if (user.getReqUserIcon() != null) {
+            MultipartFile userIcon = user.getReqUserIcon();
+            try {
+                userIconBytes = userIcon.getBytes();
+            } catch (IOException e) {
+                throw new RuntimeException("err userIconBytes trans fail");
+            }
+            userModel.setUserIcon(userIconBytes);
+        }
+
 
         userModel.setUserId(UUID.randomUUID().toString());// 복호화 후 SET
 
