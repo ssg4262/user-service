@@ -10,6 +10,8 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)// 자동 생성
     private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)// 자동 생성
+    private Long userSeq;
     @Column(nullable = false, length = 50)
     private String email;
     @Column(nullable = false, length = 50)
