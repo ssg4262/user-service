@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 @Log4j2
@@ -51,9 +52,29 @@ public class UserServiceImpl implements UserService {
                 new ArrayList<>());
     }
 
+    public String generateUniqueUserSeq() {
+        Set<String> generatedUserIds = new HashSet<>();
+        return Stream.generate(this::generateRandomUserId)
+                .filter(userId -> {
+                    boolean isUnique = !generatedUserIds.contains(userId);
+                    if (isUnique) {
+                        generatedUserIds.add(userId);
+                    }
+                    return isUnique;
+                })
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Unique userSeq cannot be generated"));
+    }
+    private String generateRandomUserId() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString().replace("-", "");
+    }
+
     @Override
     public ResponseUser createUser(RequestUser user) {
         byte[] userIconBytes;
+        String userSeq = generateUniqueUserSeq();
+
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT); // 필드가 맞아떨어질때 매핑
 
         UserModel userModel = mapper.map(user, UserModel.class);
@@ -68,7 +89,7 @@ public class UserServiceImpl implements UserService {
             userModel.setUserIcon(userIconBytes);
         }
 
-
+        userModel.setUserSeq(userSeq);
         userModel.setUserId(UUID.randomUUID().toString());// 복호화 후 SET
 
         UserEntity userEntity = mapper.map(userModel, UserEntity.class); // 매칭되는 필드만 변환 하는패턴
@@ -137,5 +158,6 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userEntity);
         return ResponseMessage.SUCCESS;
     }
+
 
 }

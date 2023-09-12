@@ -11,7 +11,7 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)// 자동 생성
     private Long id;
     @GeneratedValue(strategy = GenerationType.IDENTITY)// 자동 생성
-    private Long userSeq;
+    private String userSeq;
     @Column(nullable = false, length = 50)
     private String email;
     @Column(nullable = false, length = 50)

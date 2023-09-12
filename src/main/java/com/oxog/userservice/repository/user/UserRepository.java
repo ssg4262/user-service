@@ -12,7 +12,7 @@ public interface UserRepository extends CrudRepository<UserEntity,Long> {
     Optional<List<UserEntity>> findAllByDeleteYn();
     @Query("SELECT u FROM UserEntity u WHERE u.userId = :userId AND u.deleteYn = 'N'")
     UserEntity findByUserId(String userId);
-
+    UserEntity findByUserSeq(String userSeq);
     @Query("SELECT u FROM UserEntity u WHERE u.email = :email AND u.deleteYn = 'N'")
     UserEntity findByEmail(String email);
 
