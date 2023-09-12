@@ -61,14 +61,14 @@ public class UserServiceImpl implements UserService {
     }
 
     private void setProfileImageIfPresent(RequestUser user, UserModel userModel) {
-        if (user.getReqUserIcon() != null) {
-            MultipartFile userIcon = user.getReqUserIcon();
-            try {
-                userModel.setUserIcon(userIcon.getBytes());
-            } catch (IOException e) {
-                throw new RuntimeException("Error while converting userIcon to bytes");
-            }
-        }
+        Optional.ofNullable(user.getReqUserIcon())
+                .ifPresent(userIcon -> {
+                    try {
+                        userModel.setUserIcon(userIcon.getBytes());
+                    } catch (IOException e) {
+                        throw new RuntimeException("Error while converting userIcon to bytes");
+                    }
+                });
     }
 
     private void checkEmailDuplication(String email) {
