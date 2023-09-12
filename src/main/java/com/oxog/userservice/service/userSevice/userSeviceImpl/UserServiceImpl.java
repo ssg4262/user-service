@@ -35,24 +35,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
 
-
-    //MatchingStrategies.STANDARD : 지능적 매핑
-    //MatchingStrategies.STRICT : 필드가 맞아떨어질때 매핑
-    //MatchingStrategies.LOOSE : 느슨한 매핑
     ModelMapper mapper = new ModelMapper();
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        UserEntity userEntity = userRepository.findByEmail(email); //이메일로 조회
-
-        if(userEntity == null) throw new UsernameNotFoundException(email);
-
-        return new User(userEntity.getEmail(),userEntity.getEncryptedPwd(),
-                true, true , true , true ,
-                new ArrayList<>());
-    }
-
-    public String generateUniqueUserSeq() {
+    private String generateUniqueUserSeq() {
         Set<String> generatedUserIds = new HashSet<>();
         return Stream.generate(this::generateRandomUserId)
                 .filter(userId -> {
@@ -70,54 +55,62 @@ public class UserServiceImpl implements UserService {
         return uuid.toString().replace("-", "");
     }
 
-    @Override
-    public ResponseUser createUser(RequestUser user) {
-        byte[] userIconBytes;
-        String userSeq = generateUniqueUserSeq();
+    private void fieldsIfPresent(UserModel userModel, RequestPatchUser requestPatchUser) {
+        Optional.ofNullable(requestPatchUser.getNickName()).ifPresent(userModel::setNickName);
+        Optional.ofNullable(requestPatchUser.getAddress()).ifPresent(userModel::setAddress);
+    }
 
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT); // 필드가 맞아떨어질때 매핑
-
-        UserModel userModel = mapper.map(user, UserModel.class);
-
+    private void setProfileImageIfPresent(RequestUser user, UserModel userModel) {
         if (user.getReqUserIcon() != null) {
             MultipartFile userIcon = user.getReqUserIcon();
             try {
-                userIconBytes = userIcon.getBytes();
+                userModel.setUserIcon(userIcon.getBytes());
             } catch (IOException e) {
-                throw new RuntimeException("err userIconBytes trans fail");
+                throw new RuntimeException("Error while converting userIcon to bytes");
             }
-            userModel.setUserIcon(userIconBytes);
         }
+    }
 
-        userModel.setUserSeq(userSeq);
-        userModel.setUserId(UUID.randomUUID().toString());// 복호화 후 SET
-
-        UserEntity userEntity = mapper.map(userModel, UserEntity.class); // 매칭되는 필드만 변환 하는패턴
-        // 이메일 중복 체크
-        UserEntity chkDup = userRepository.findByEmail(userEntity.getEmail());
-        if (chkDup != null) throw new UsernameNotFoundException("Email Duplicate");
-        //
-        userEntity.setDeleteYn("N");
-        userEntity.setEncryptedPwd(passwordEncoder.encode(userModel.getPwd())); // 암호 복호화
-        userRepository.save(userEntity);// 테이블로 변환 후 save
-
-        UserModel responseUserModel = mapper.map(userModel, UserModel.class);
-
-        return mapper.map(responseUserModel, ResponseUser.class);
+    private void checkEmailDuplication(String email) {
+        if (userRepository.findByEmail(email) != null) {
+            throw new UsernameNotFoundException("Email Duplicate");
+        }
     }
 
     @Override
-    public UserModel getUserByUserId(String userId) {
-        UserEntity userEntity = userRepository.findByUserId(userId);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        UserEntity userEntity = userRepository.findByEmail(email);
+        if (userEntity == null) {
+            throw new UsernameNotFoundException(email);
+        }
+        return new User(userEntity.getEmail(), userEntity.getEncryptedPwd(), true, true, true, true, new ArrayList<>());
+    }
 
-        if(userEntity == null) throw new UsernameNotFoundException("User Not Found");
+    @Override
+    public ResponseUser createUser(RequestUser user) {
+        UserModel userModel = mapRequestUserToUserModel(user);
+        UserEntity userEntity = mapUserModelToUserEntity(userModel);
+        checkEmailDuplication(userEntity.getEmail());
+        saveUserEntity(userEntity);
+        return mapUserModelToResponseUser(userModel);
+    }
 
+    @Override
+    public ResponseMessage patchUser(String userId, RequestPatchUser requestPatchUser) {
+        UserEntity userEntity = findUserByUserId(userId);
         UserModel userModel = mapper.map(userEntity, UserModel.class);
+        fieldsIfPresent(userModel, requestPatchUser);
+        UserEntity reqPatchEntity = mapUserModelToUserEntity(userModel);
+        saveUserEntity(reqPatchEntity);
+        return ResponseMessage.SUCCESS;
+    }
 
-        List<ResponseOrder> orders = new ArrayList<>();
-        userModel.setOrders(orders);
-
-        return userModel;
+    @Override
+    public ResponseMessage deleteUser(String userId) {
+        UserEntity userEntity = findUserByUserId(userId);
+        userEntity.setDeleteYn("Y");
+        saveUserEntity(userEntity);
+        return ResponseMessage.SUCCESS;
     }
 
     @Override
@@ -127,37 +120,58 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserModel getUserByEmail(String email) {
-        UserEntity userEntity = userRepository.findByEmail(email);
-        if (userEntity == null) throw new UsernameNotFoundException(email);
-        UserModel userModel = mapper.map(userEntity,UserModel.class);
+    public UserModel getUserByUserId(String userId) {
+        UserEntity userEntity = findUserByUserId(userId);
+        UserModel userModel = mapper.map(userEntity, UserModel.class);
+        userModel.setOrders(new ArrayList<>());
         return userModel;
     }
 
     @Override
-    public ResponseMessage patchUser(String userId, RequestPatchUser requestPatchUser) {
-        UserEntity userEntity = userRepository.findByUserId(userId);
-        if(userEntity == null)throw new NotFoundException("No search User");
-
-        UserModel userModel = mapper.map(userEntity, UserModel.class);
-
-        // 업데이트할 필드를 람다식을 사용하여 설정 ifPresent = 값이 있을경우만 업데이트
-        Optional.ofNullable(requestPatchUser.getNickName()).ifPresent(userModel::setNickName);
-        Optional.ofNullable(requestPatchUser.getAddress()).ifPresent(userModel::setAddress);
-
-        UserEntity reqPatchEntity = mapper.map(userModel, UserEntity.class);
-        userRepository.save(reqPatchEntity);
-        return ResponseMessage.SUCCESS;
+    public UserModel getUserByEmail(String email) {
+        UserEntity userEntity = findUserByEmail(email);
+        return mapper.map(userEntity, UserModel.class);
     }
 
-    @Override
-    public ResponseMessage deleteUser(String userId) { // 회원정보 삭제
-        UserEntity userEntity = userRepository.findByUserId(userId);
-        if(userEntity == null) throw new NotFoundException("No search User");
-        userEntity.setDeleteYn("Y");
+    private void saveUserEntity(UserEntity userEntity) {
         userRepository.save(userEntity);
-        return ResponseMessage.SUCCESS;
     }
 
+    private UserEntity findUserByUserId(String userId) {
+        UserEntity userEntity = userRepository.findByUserId(userId);
+        if (userEntity == null) {
+            throw new NotFoundException("No search User");
+        }
+        return userEntity;
+    }
+
+    private UserEntity findUserByEmail(String email) {
+        UserEntity userEntity = userRepository.findByEmail(email);
+        if (userEntity == null) {
+            throw new UsernameNotFoundException(email);
+        }
+        return userEntity;
+    }
+
+
+    private UserModel mapRequestUserToUserModel(RequestUser user) {
+        UserModel userModel = mapper.map(user, UserModel.class);
+        userModel.setUserSeq(generateUniqueUserSeq());
+        setProfileImageIfPresent(user, userModel);
+        userModel.setUserId(UUID.randomUUID().toString());
+        return userModel;
+    }
+
+    private UserEntity mapUserModelToUserEntity(UserModel userModel) {
+        UserEntity userEntity = mapper.map(userModel, UserEntity.class);
+        userEntity.setDeleteYn("N");
+        userEntity.setEncryptedPwd(passwordEncoder.encode(userModel.getPwd()));
+        return userEntity;
+    }
+
+    private ResponseUser mapUserModelToResponseUser(UserModel userModel) {
+        UserModel responseUserModel = mapper.map(userModel, UserModel.class);
+        return mapper.map(responseUserModel, ResponseUser.class);
+    }
 
 }
